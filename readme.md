@@ -6,11 +6,11 @@ I am hoping that the notebooks here provide a helpful accompaniment to the short
 
 
 Some of the best books and learning resources that have helped me:
-*[Grokking Deep Learning](https://www.manning.com/books/grokking-deep-learning)
-*[Deep Learning From Scratch](https://www.amazon.co.uk/Deep-Learning-Scratch-Building-Principles-ebook/dp/B07XL53Y4C)
+* [Grokking Deep Learning](https://www.manning.com/books/grokking-deep-learning)
+* [Deep Learning From Scratch](https://www.amazon.co.uk/Deep-Learning-Scratch-Building-Principles-ebook/dp/B07XL53Y4C)
 * [Neural Networks and Deep Learning](http://neuralnetworksanddeeplearning.com/) - A free online book
 * [Practical Deep Learning for Coders](https://course.fast.ai/) notated game of chess
-* The possibility of training the NN from all the recorded games of a 
+
 
 
 Current state: In progress, part 1 complete. Contribution and tidying up is always welcome welcome.
