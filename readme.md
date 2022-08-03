@@ -6,10 +6,10 @@ I am hoping that the notebooks here provide a helpful accompaniment to the short
 
 
 Some of the best books and learning resources that have helped me:
-* [Grokking Deep Learning](https://www.manning.com/books/grokking-deep-learning)
-* [Deep Learning From Scratch](https://www.amazon.co.uk/Deep-Learning-Scratch-Building-Principles-ebook/dp/B07XL53Y4C)
+* [Grokking Deep Learning](https://www.manning.com/books/grokking-deep-learning) by Andrew Trask
+* [Deep Learning From Scratch](https://www.amazon.co.uk/Deep-Learning-Scratch-Building-Principles-ebook/dp/B07XL53Y4C) by Seth Weidman
 * [Neural Networks and Deep Learning](http://neuralnetworksanddeeplearning.com/) - A free online book
-* [Practical Deep Learning for Coders](https://course.fast.ai/) notated game of chess
+* [Practical Deep Learning for Coders](https://course.fast.ai/) - A free course designed for people with some coding experience, who want to learn how to apply deep learning and machine learning to practical problems
 
 
 
