@@ -1,0 +1,242 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[T1,T2A]{fontenc}
+\usepackage{hyperref}
+
+%%% PAGE DIMENSIONS
+\usepackage{geometry}
+\geometry{a4paper}
+
+
+\usepackage{graphicx}
+
+%\usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+
+%%% PACKAGES
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{paralist}
+\usepackage{verbatim}
+\usepackage{subfig}
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\thesection}{\Roman{section}} 
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape}
+
+
+
+\title{A Brief Introduction to Neural Networks}
+\author{Jack Adam Collins}
+\date{}
+
+\begin{document}
+\maketitle
+
+This paper will discuss what neural networks are (part I), why they are an effective means of prediction (part II), and how they are trained (part III). The central aim of this paper is two-fold. Firstly, to reinforce what I have learned about neural nets via research and development within the machine learning team. Secondly, to share this knowledge more widely for the purposes of finding appropriate applications for this methodology to work within the \textit{Quantum} faculty space. This introduction is written to serve as a very general presentation, specifically to a simple \textit{feed-forward} example with the first two sections requiring only minimal mathematical notation. Accompanying this paper is a repository of jupyter notebooks with instructions on building a neural network 'from scratch' without the use of an external deep learning framework\footnote{Access to the repo can be provided upon request: \url{https://stash.aviva.co.uk/projects/TPA/repos/mlt_laboratory/}}. While it is unlikely that members of Quantum will need to build neural networks without the use of an existing framework, let this work act as a theoretical primer to the methodology itself. Integrating neural net frameworks as part of DataRobot's new custom code and compose ML features will be essential in improving models and remaining at the cutting edge of machine learning. Often neural networks are considered 'black box', but understanding the fundamentals of building simple neural networks without a pre-existing framework allows for a better understanding of the methodology and an intuition as to the scale required for a neural network to fulfil a given task adequately.
+\section{}
+
+
+Neural networks describe a class of machine learning predictors which take their influence from the biological architecture that constitutes the animal brain\footnote{Warren S. McCulloch; Walter Pitts. "A Logical Calculus of the Idea Immanent in Nervous Activity"}. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{basic-nn.png}
+    \caption{Schematic for a basic feed-forward neural network}   
+\end{figure}
+
+The neural network in figure 1 serves as the primary example throughout this paper, beginning by defining the specific components visualised in the diagram. The circles represent individual \textit{neurons}, and the interconnecting arrows are \textit{edges}. In combination, they define the \textit{graph} underlying the neural network – a cluster of nodes with linking arrows between them. If the graph has no cycles, that is, edges looping around in a circle, then the neural net is considered \textit{feed-forward}, which for the purposes of simplicity will be the focus of the neural networks presented. In figure 2, the green neuron is the \textit{input neuron}, the yellow neuron is the \textit{output neuron}, and the blue neurons are \textit{bias neurons}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{labelled-nets.png}
+    \caption{Labelled schematic for the feed-forward neural network}   
+\end{figure}
+
+If the possibility exists of dividing the entire set of neurons into an ordered list of subsets, such that each neuron \textit{only} points towards neurons in the subset next in line, then the network is considered \textit{layered}. While the focus here is layered networks, non-layered networks do in fact exist. For example, a neural network with the given edges:
+\begin{equation}A \rightarrow B, \nonumber\end{equation}
+\begin{equation}A \rightarrow C, \nonumber\end{equation}
+\begin{equation}B \rightarrow C \nonumber\end{equation}
+cannot be divided into layers.
+
+The graph underlying the neural network illustrates the way in which each neuron points only towards neurons within the next layer. This depiction is simplified but can be expanded upon by incorporating adequate notation, as illustrated in figure 3.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{notation.png}
+    \caption{The feed-forward neural network with the layers depicted}   
+\end{figure}
+
+In the schematic, \textit{weights} are given by $w_{i, j}$. The weights determine the relative importance of the value of the incoming edge. \textit{Functions} are given by $\sigma_{x}$, in which functions are considered in the classical sense: a value is taken as input before being output as something else. If we are to discuss, say, the $3^{rd}$ neuron, then we shall herein use the notation $\sigma_{3}$.
+	Referring specifically to figure 3, we can now walk through the particular operations of the network. An input value $x$ is given to the input neuron, $\sigma_{1}$, which forwards it to neurons three, $\sigma_{3}$, and four, $\sigma_{4}$. Synchronously, $\sigma_{2}$ (the first bias neuron) sends a constant value, 1, to neurons three and four (for simplicity, all our bias neurons will be outputing the value of 1). At this point, the third neuron has received two values – it now multiplies them with the weights on the respective edges; multiplying the $x$ input from the first neuron with $w_{1, 3}$ and the number 1 coming from the bias neuron with $w_{2, 3}$. The values are then added together and the function $\sigma_{3}$ is then applied to them. The result of this process is\footnote{Note that, typically multiplying by 1 would be simplified in a given equation, but to illustrate the role the bias plays in the calculations, the value remains shown in both equations (1) and (2).}:
+\begin{equation}\sigma_{3}(w_{1, 3}\cdot x + w_{2, 3}\cdot 1)\end{equation}
+
+The $4^{th}$ neuron also receives two values, performing the same operation (using the weights $w_{1, 4}$ and $w_{2, 4}$), leading to the term: 
+\begin{equation}\sigma_{4}(w_{1, 4}\cdot x + w_{2, 4}\cdot 1)\end{equation}
+
+The $3^{rd}$ neuron outputs its value to the $6^{th}$ neuron, the $4^{th}$ outputs its value to both the $6^{th}$ and the $7^{th}$, and the $5^{th}$ neuron (the bias neuron) outputs the number 1 to both the $6^{th}$ and the $7^{th}$ neuron. Their weights are then applied, then their functions, and so on. Eventually, the $9^{th}$ neuron receives a value, applies $\sigma_{9}$ to it, and outputs the result, which is the resulting output of the entire network.
+
+Recall that the blue neurons depicted in the schema are named bias neurons – having no incoming edges. Instead of computing something, they always output a given number and thus bias the weighted sum, which arrives at the neurons in the next layer, by a constant factor. Each hidden layer has exactly one bias neuron as does the input layer. In this way, each neuron, excluding the input neurons, has an incoming edge from a bias neuron. Also note that the input neuron doesn't apply any function to the input it receives (but all other neurons do).
+
+To describe this process more concisely, additional notation is required in order to express the value incoming to a given neuron, in particular, the weighted sum of the values on the incoming edges, and the final value which comes out after the application of the function. In particular, we can examine the $6^{th}$ neuron, $\sigma_{6}$, (shown in figure 4).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{n6.png}
+    \caption{Closer inspection of the sixth neuron.}   
+\end{figure}
+
+We can see that the input values are received, the weighted sum $a_{6}$ is computed, then $\sigma_{6}$ is applied to it, resulting in the output value $z_{6}$. Thus, we can generalise: 
+\begin{equation}z_{6} = \sigma_{6}(a_{6})=\sigma_{6}(w_{3,6}\cdot z_{3}+w_{4,6}\cdot z_{4}+w_{5,6}) \nonumber\end{equation}
+
+Hence, the output of a given neuron is expressed in terms of the outputs of the neurons in the previous layer; thus, the equation can give a description of the output of any neuron within the network. Note, the value $z_{5}$ is missing – since $\sigma_{5}$ is a bias neuron with the constant value 1, therefore $w_{4,5}\cdot z_{5}$ is equivalent to $w_{4,5}$. Furthermore, note that the image shows the weights of the incoming edges, but not the weight of the outgoing edge: the weights of an edge should always be thought of as belonging to the neuron the edge acts as an input to.
+
+Recalling that our neural network can be divided into layers, a useful process for purposes of evaluating the network, we can analyse further by looking to figure 5.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{layers.png}
+    \caption{The feed-forward neural network with the respective layers depicted}   
+\end{figure}
+
+To begin, the network is fed the input value, or values, $x_{k}$, setting:
+
+\begin{equation}z_{k}=x_{k}\nonumber\end{equation}
+
+for each neuron, $k$, in the input layer. Assuming all output values for some layer, $\ell$, are known, it is possible to then compute the output values for each neuron, $k$, in layer $\ell+1$ by setting
+
+\begin{equation}z_{k} = \sigma_{k}\left(\sum_{_{i\in I_{k}}} w_{i,k}z_{i} \right)\nonumber\end{equation}
+
+where $I_{k}$ is the set of indices of neurons with an edge pointing towards neuron $k$. As the equation applies for any layer, the entire network can be evaluated, a single layer at a time. The output values $z_{k}$ of the final layers will be the output values $y_{k}$ of the network.
+
+\section{}
+
+Now that we know what a neural network is and how to compute one, we can ask what are neural networks good for? Why do they work so well? We can start by addressing the first question.
+
+If all values\footnote{That is, the inputs, outputs, and the values sent between neurons.}, are real numbers, then the total network is said to \textit{implement a function}:
+
+\begin{equation}f: \mathbb{R}^{n} \rightarrow \mathbb{R}^{m}  \nonumber\end{equation}
+
+where $n$ and $m$ represent the number of neurons in the input layer and output layer respectively, which in the case of the network presented is given by $n=m=1$. As we can see, $f$ always takes an element in $\mathbb{R}^{n}$, a vector of $n$ numbers\footnote{All the numbers fed to the input neurons.} and returns an element in  $\mathbb{R}^{m}$, which is a vector of $m$ numbers\footnote{All the numbers returned by the output neurons.}. This happens for any possible input, that is, for any $n$ input numbers, we see a return of $m$ output numbers. In this way, \textit{implementing a function} allows for abstraction: the behaviour is fully described by $f: \mathbb{R}^{n} \rightarrow \mathbb{R}^{m}$. This is beneficial as functions are better understood objects than neural networks.
+
+	Evidently, the utility of the neural network is that it allows an evaluation of the function $f$, which can be especially of interest if $f$ does something useful. For example, suppose that $f$ takes the source of an image as input and then outputs a single bit indicating whether or not the image contains a cat. In this example, if we suppose the image is gray-scale with 1 byte per pixel and the image has dimensions of 200 by 200 pixels, then the function is of the form:
+
+\begin{equation}f: \left \{ 0,1 \right \}^{8\cdot 200 \cdot 200} \rightarrow  \left \{ 0,1 \right \} \nonumber\end{equation}
+
+We see that the function takes a vector of $8\cdot 200 \cdot 200$ bits as input (that is, the image), and outputs a single bit, 1 or 0, determining "cat" or "not cat" respectively. A similar example is in practice at the social media company, Twitter, where the function takes the form:
+
+\begin{equation}f: \left \{ 0,1 \right \}^{8\cdot 280} \rightarrow  \left \{ 0,...,10 \right \} \nonumber\end{equation}
+
+The vector here encodes a 'tweet' (280-character limit, each encoded as a single byte with special characters ignored), and then outputs a value associated to the likelihood of the tweet in violating the platform's terms of service.
+
+\textit{How} a neural network is trained is expanded on in section III, but for simplicity we should note that this works based on training data. That is, we have some sequence of examples $(x_{1},y_{1}),...,(x_{n},y_{n})$ where $x_{i}$ are inputs to the neural network and $y_{i}$ are outputs. The network is then trained to do well on the training data, with the intention that this will lead it to also do well in the 'real world'\footnote{Referring to the twitter example, that it labels new tweets accurately.}. However, this description is not specific to neural networks – it applies to all instances of supervised learning and is likely a familiar concept. So what is it about neutral networks in particular that make them so powerful?
+
+Evidently, neural networks, or \textit{deep learning}, works remarkably well. It's development has helped improve the cutting edge in areas ranging from speech recognition and visual object recognition to genomics and automatic game playing. Yet, it is still not fully understood why deep learning works so well. Many algorithms using artificial neural networks are understood only at a heuristic level, where we empirically know that certain training protocols employing large data sets will result in excellent performance.\footnote{Much like its biological analog, the situation with neural nets is reminiscent of the situation with human brains: we know that if we train a child according to a certain curriculum, she will learn
+certain skills — but we lack a deep understanding of \textit{how exactly} her brain accomplishes this.} One possible solution is to point towards the \textit{expressibility theorems} on neural networks, most notably, the \textit{universal approximation theorem}\footnote{Cybenko, G. (1989) "Approximations by superpositions of sigmoidal functions".} – which states that a feed-forward neural network with only a single hidden layer -- recall that, in the earlier example, we had two hidden layers -- can approximate any continuous and bounded function under some given reasonable conditions. However, this proof largely consists of brute-forcing the approximation. In addition the neural networks constructed in the proof have exponentially many neurons in the hidden layer – conclusions asserting that results can be achieved with exponential resources are generally unsatisfying.
+
+A simpler result which can be rigorously proved with less resource states that a neural network, utilising only a single hidden layer, can implement any boolean function of the form:
+
+
+\begin{equation}f: \left \{ 0,1 \right \}n \rightarrow  \left \{ 0,1 \right \} \end{equation}
+
+which we can think of as taking $n$ bits as input and outputting a binary value. This theorem states that there is an architecture, or graph, for a given neural network such that, for each possible function of the binary form given by (3), there is a set of weights such that the neural network defined by that particular architecture and that set of weights implements that function. Furthermore, every neuron within the network applies the same function, $\sigma$. However, the number of neurons in the hidden layer of this architecture is, again, forced to have an exponential number of neurons in $n$, therefore, conclusions are also unsatisfying in terms of explainability.
+
+If the \textit{universal approximation theorem} is unable to provide satisfying conclusions, then a better explanation might be found in a paper titled \textit{Why does deep and cheap learning work so well?}\footnote{Lin, H W., Tegmark, M, Rolnick, D. (2016) "Why does deep and cheap learning work so well?"}, in which properties encountered in physics, such as symmetry and locality, can be used to expand upon the manner in which we attempt to understand how neural networks\footnote{A brief note on terminology: 'deep learning' refers to neural networks with many hidden layers rather than just one or two.} approximate arbitrary functions well. This approach begins by looking towards simple tasks, such as image-classification, and pointing out that these kinds of tasks are, in some sense, not possible to solve by way of a neural network. Referring back to the example given earlier, in which a 200 by 200 bit grey-scale image, with a single byte for each pixel defines an input space given by:
+
+\begin{equation}f: \left \{ 0,1 \right \}^{8\cdot 200 \cdot 200} \nonumber\end{equation}
+
+As we can see, this space consists of $2^{320000}$ various encodings for images, which is roughly $10^{10000}$. We need not be modest however; we know that neural networks are, in fact, used to classify much larger images. If, in fact, the images were 1000 by 1000 pixels with 4 bytes per pixel, then the space has $2^{32000000}$elements, which is around $10^{10000000}$. On the other hand, a neural network with, say, 1000 neurons only has $n^{1000}$ possible combinations, where $n$ is the number of different values possible for each weight. Even if we are very liberal and assume that each weight can lead to a 100 meaningfully different configurations, that would only provide us with the ability to differentiate between at most $10^{10000}$ different cases – not enough for very small gray-scale images, and certainly nowhere near enough for decent sized images. This follows because it is impossible for a neural network cannot to differentiate more images than it has different configurations. Moreover, this point does nothing to address the amounts of training data that are available in practice, which are nowhere near as large.
+
+The suggestion then, is that the problem space is generated by physical processes that are much more simple to define than the state space itself and, furthermore, even simpler than the neural network. To refer back to an earlier example, cats - or even images of them - are complicated objects mathematically, yet the process that came to generate cats (i.e, evolution) is a simple mechanism relatively. Likewise, the instruction to 'draw a picture of a cat', which we might provide to a class of children, is simpler than the pictures that they would come to create. So, while it is the case that a neural network comprised of around one thousand neurons is only capable of providing reasonable responses to a miniscule subset of images within 'image-space', this is acceptable since most of the images we are interested in are contained within that subset\footnote{Notably, given the set of constraints imposed on locality, symmetry and polynomial order, the number of parameters within the Hamiltonian of the standard model is limited to just \textit{32}.}. Evidently, that deep learning has had great success in practice presents a clear opposition to the \textit{universal approximation theorem}. So we might ask, why deep learning rather than any other methodology? Lin et al. assert that nature is, at a fundamental level, hierarchical:\\
+
+"\textit{One of the most striking features of the physical world is its hierarchical structure. Spatially, it is an object hierarchy: elementary particles form atoms which in turn form molecules, cells, organisms, planets, solar systems, galaxies, etc. Causally, complex structures are frequently created through a distinct sequence of simpler steps.}"\footnote{Ibid.}\\
+
+Evidently, it is not simply that the small complexity of the generation process makes it feasible for neural networks to accomplish tasks such as facial recognition. Rather, the neural net may learn by reversing this generative process and, since this process naturally occurs in multiple steps, the most effective neural networks will themselves be performing their computations in multiple steps.  We can show that multiple steps translates into multiple layers by observing that, even if a network possesses multiple input nodes, it is still considered to be modifying a single object, that is, a vector whereby $\textup{\textbf{x}} \in \mathbb{R}_{n}$, where $n$ represents the number of input nodes. Therefore the function, $f$, which computes the network can be given by:
+
+\begin{equation}f = \sigma_{\ell} \circ A_{\ell} \circ \cdots \circ \sigma_{2} \circ A_{2}\nonumber\end{equation}
+
+where $\ell$ is the number of layers, $A_{i}$ are linear functions respectively, $\sigma_{i}$ are the functions implemented by the neurons, coordinate-wise. The input-vector $\textbf{x}$ enters the input neurons and passes them unchanged, they are then scaled by the values of the weights between the first and second laters, which corresponds to a linear transformation, $A_{2}$. The neurons in the second layer, the first hidden layer, apply their respective functions, corresponding to the application component-wise of $\sigma_{2}$\footnote{Assuming that all the neurons within the layer implement the same function.}. The outputs are then scaled by the weights between the second and third layers, also a linear transformation, $A_{3}$, and so on. Finally, the output layer applies the function $\sigma_{\ell}$ component-wise. So we can see, the network does apply a pair of transformations for each layer.
+
+From this, an observation that supports Lin et al., can be found by implementing identity functions in the neurons. In this configuration, the network decomposes the transformations, given by:
+
+\begin{equation}f = A_{l} \circ \cdots \circ A_{2}\nonumber\end{equation}
+
+and concatenating functions in this way leads to a linear function, that is, the network \textit{only} applies a single matrix, $A_{\ell} \cdots A_{2}$, to the input-vector. Supposing that the elements of the input comprise a matrix, $N$, and objective of the network is to multiply the given input with another matrix, $M$. This can be achieved trivially using simply the input and output layers, without need of hidden layers, setting $A_{\ell} = A_{2} = M$\footnote{This should be recognisable as the typical way of performing matrix multiplication, requiring a number of operations, $n^{3}$.}. Hence, as neural networks are universal approximators, there exists a network that implements matrix multiplication with similar time complexity. This is not something that can be replicated by way of a shallow network. Lin et al. have refered to these results as \textit{no-flattening theorems}, asserting that it is possible to prove, rigourously, that some specific neural networks are not able to be flattened without a loss in efficiency\footnote{Additionally, we should add that there is a version of the universal approximation theorem which restricts the width of a network in favour of additional hidden layers.}. Is there an entirely satisying to the question "\textit{why do they work?"} The answer is clearly not in the affirmative, and suggests that we are perhaps a long way from a satisfactory conclusion. However, this is an area of active research and, in fact, is a topic of interest in some of the research undertaken by Aviva in collaboration with Cambridge University\footnote{This work is being undertaken by Jonathan Crabbe whose supervisor, Mihaela Van Der Schaar, has written extensively on explainability.}.
+
+\section{}
+
+To understand \textit{how} a neural network learns, we first need to specify which particular part of the network we want to learn. While there are many differing approaches, typically,  the underlying graph\footnote{Recall that the graph specifies all neurons and edges that comprise the network.} and the functions, $\sigma_{k}$, are treated as fixed while the task is then to find the set of weights, $w_{k}$, which perform the best. All of these specifications we refer to as the \textit{architecture} of the network.
+
+We start by assuming that we are operating in the mode of \textit{supervised learning}, in which we have access to a sequence of training examples given by:
+
+\begin{equation}S = ((x_{1}, y_{2}, \cdots , (x_{m}, y_{m}))\nonumber\end{equation}
+
+Here, $x_{i}$ is an input to the network, while $y_{i}$ is the corresponding correct output. The network is then trained to predict well on $S$, the training data, with the intention that this will also perform effectively in real-world applications. How is this process performed? By selecting some finite encoding for real numbers and performing an exhaustive search over all possible combinations for the weight values, testing the network with each configuration before finally choosing the best. To illustrate this process, if we specify a 64-bit encoding for the set of real numbers, then we will find that there are $2^{64 \cdot 12}$ combinations of values, and therefore, this approach will require this number of rounds for testing on all $S$. Evidently, a more efficient approach is required and, as such, we will look toward \textit{backpropagation} by way of stochastic gradient descent.
+
+Supposing a network of the form given in figure 3, with some given preliminary weights so that the network is fully defined, we might then focus on some training point, ($x_{i}, y_{i}$). If $x_{i}$ serves as the input fed into the network, we will then get some number as output, $f(x_{i})$ This prediction will be good should $f(x_{i})$ be in proximity of $y_{i}$ and will be considered poor otherwise, since $y_{i}$ is the known, correct output for $x_{i}$. Thus, the difference between the prediction and the correct value will be used to measure the quality of prediction by squaring the difference, $(y_{i}-f(x_{i}))^2$, to gain a measure for the performance of the network on this point. This difference is dependent on all the values of the weights, $w_{\bullet, \bullet}$, since all of these values contribute in order to compute $f(x_{i})$. Suppose we were to pick out a weight arbitrarily, $w_{i, j}$ and treat all other weights as fixed, then consider the difference, $(y_{i}-f(x_{i}))^2$ , as a function of the weight in question. We call this the \textit{loss function}:
+
+\begin{equation}\ell: \mathbb{R} \to \mathbb{R} \nonumber\end{equation}
+
+This loss function takes a value, $x$, for the weight, $w_{i,j}$ and outputs the value, $(y_{i}-f(x_{i}))^2$, while all other weights remain fixed. Computing this function we can then calculate the partial derivative, $\frac{\partial\ell }{\partial w_{i,j}}$. If this value is positive, then we can infer that $(y_{i}-f(x_{i}))^2$ will increase should the value of the weight, $w_{i, j}$, be increased. If the value is negative, then $(y_{i}-f(x_{i}))^2$ will decrease if the value of the weight, $w_{i, j}$, is increased. In both cases, we are able to determine exactly how to modify the weight $w_{i,j}$ in order to decrease the error. This can then be performed for each separate weight, resulting in an iteration through the neural network in which all the weights are improved. Then, starting with the new weights, this process is repeated for the next training point which will conclude by updating the weights, and the process is repeated for a third training point and so on. The output of the algorithm will be the final weights after updating over all the training points. The specific size of adjustment in changing each weight's value is determined by a parameter called the \textit{step size}. 
+
+Recall that the network is evaluated layer by layer. Similiarly, we calculate the partial derivative with respect to each weight in a layer by layer process, however this is in reverse: hence, \textit{backpropagation}. We can refer back to figure 3 and take as our example an edge directed into the final layer: $w_{6,9}$. Inspecting the $9^{th}$ neuron more closely, we can see in figure 6 that there are 3 elements required for differentiation; the input or weighted sum of the incoming edges ($a_{6}$), the function of the neuron ($\sigma_{6}$), and the output after the application of the function ($z_{6}$).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{n9.png}
+    \caption{Closer inspection neuron 9.}   
+\end{figure}
+
+As we are interested in the term $\frac{\partial\ell }{\partial w_{6,9}}$, via the chain rule, we can write:
+
+\begin{equation}\frac{\partial\ell }{\partial w_{6,9}} = \frac{\partial\ell }{\partial z_{9}} \cdot \frac{\partial z_{9} }{\partial a_{9}} \cdot \frac{\partial a_{9} }{\partial w_{6,9}} \nonumber\end{equation}
+
+where the first term on the right-hand side is:
+
+\begin{equation}\frac{\partial\ell }{\partial z_{9}} = \frac{\partial (y-z_{9})^{2} }{\partial z_{9}} = 2z_{9}\nonumber\end{equation}
+
+and the second term on the right-hand side is the output of the 9th neuron with regard to its input; dependent on the function $\sigma_{9}$. Lastly, the final term on the right-hand side is simple; we have:
+
+\begin{equation}\frac{\partial a_{9}}{\partial w_{6, 9}} = \frac{\partial [w_{6,9}z_{6}+w_{7,9}z_{7}+w_{8,9}]}{\partial w_{6,9}} =z_{6}\footnote{These are all known parameters – $z_{\bullet}$ is obtained by evaluating the neural network on the input $x_{i}$.} \nonumber\end{equation}
+
+Though the value $\frac{\partial\ell }{\partial w_{6,9}}$ is of central interest, we instead drop the third term in the chain rule above and instead focus on the derivative with regard to the input value of the neuron in the final layer, rather than with regard to the weights associated with the incoming edges. Thus, we can then process the \textit{whole network} by way of the following steps:
+
+\begin{enumerate}
+  \item Compute the derivative with regards to the input neurons of the final layer.
+  \item For each layer, $k$, compute the derivative with regards to the inputs of the neurons of layer $k$ in terms of the derivatives with regards to the inputs of the neurons of layer $k+1$.
+  \item For each weight, $w_{i,j}$, compute $\frac{\partial\ell }{\partial w_{i,j}} = \frac{\partial\ell }{\partial a_{j}} \cdot \frac{\partial a_{j} }{\partial w_{i,j}} = \frac{\partial \ell }{\partial a_{j}} \cdot z_{i}$
+\end{enumerate}
+
+1 was addressed earlier on, while 3 is fully described by the given equation. In order to demonstrate 2, we suppose that layers three and four have been processed with the second layer remaining for processing. Given that we know the derivatives for $a_{6}$, $a_{7}$, and $a_{8}$ from above, we can use these computations in order to calculate the derivative with regards to an input neuron within the second layer. As an example, selecting $a_{4}$ and, again, inspect the relevant part of the network more closely in figure 7.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{mn.png}
+    \caption{A closer inspection of some of the neurons within the network.}   
+\end{figure}
+
+Thus, we have:
+
+\begin{equation}\frac{\partial\ell }{\partial a_{4}} = \frac{\partial \ell}{\partial z_{4}} \cdot \frac{\partial z_{4}}{\partial a_{4}} \nonumber\end{equation}
+
+Notice that the second term on the right-hand side is dependent on $\sigma_{4}$, but what of the first? Here we can try to understand a final complication. The manner in which $z_{4}$ impacts the error cannot be reduced to any single derivate in the third layer since the $4^{th}$ neuron feeds in to both the $6^{th}$ and $7^{th}$ neurons. Therefore, we need apply the advanced chain rule:
+
+\begin{equation}\frac{\partial \ell}{\partial z_{4}}= \frac{\partial \ell }{\partial a_{6}} \cdot \frac{\partial a_{6}}{\partial z_{4}}+ \frac{\partial \ell}{\partial a_{7}} \cdot \frac{\partial a_{7}}{\partial z_{4}} \nonumber\end{equation}
+
+As we can see, both $\frac{\partial \ell }{\partial a_{6}}$ and $\frac{\partial \ell}{\partial a_{7}}$ are terms that have been computed in previous rounds, while the remaining terms are easy: $\frac{\partial a_{6}}{\partial z_{4}} = w_{4, 6}$ and $\frac{\partial a_{7}}{\partial z_{4}}=w_{4, 7}$.
+
+At this point, we might object that the learning process will get stuck in a local minimum since the loss-function is non-convex. The practical solution is to simply run the entire backpropagation algorithm a number of times starting from different initial weights. The aim here then is that, if each run finds some local optimum, we then take the best of these since the result will likely be very good. Repeating the entire algorithm 1000 times may seem inefficient, but recall earlier that the alternative brute-force approach would require upwards of $2^{n}$ steps, where $n$ is the number of neurons. Even for large neural networks, running backpropagation in the number of a million times would be vastly more efficient than utilising a brute force search.
+
+It is worth emphasising that neural networks are popular due to the fact that they perform well in practice, not because of theoretical results. Given their importance, existing theory is still somewhat underwhelming but a worthy area of pursued research.
+
+\end{document}
